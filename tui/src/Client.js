@@ -235,7 +235,7 @@ class ClientTUI {
 				this.memberList.push(data.user)
 				this._updateMemberList(members)
 			} else if (data.method == "userDisconnect") {
-				let index = this.memberList.findIndex(t => t.includes(data.user))
+				let index = this.memberList.findIndex(t => t == data.user)
 				if (index == -1) return
 				this.memberList.splice(index, 1)
 				this._updateMemberList(members)
