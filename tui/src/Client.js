@@ -207,7 +207,7 @@ class ClientTUI {
 				messages.log(`${this._getTime()} Client > ${data.message.trim()}`, "{red-fg}", "{/red-fg}")
 			} else {
 				if (data.method == "getMemberList") {
-					this.memberList = data.memberList
+					this.memberList = data.memberList.map(t => !t.lurkers ? `${t.username}#${t.tag}${t.admin ? " +" : ""}` : t.lurkers)
 					this._updateMemberList(members)
 				} else if(data.method == "channelChange") {
 					messages.logLines = []
