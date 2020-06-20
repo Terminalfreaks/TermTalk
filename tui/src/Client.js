@@ -179,7 +179,7 @@ class ClientTUI {
 			}
 			message += matchingMessage
 
-			messages.log(`${this._getTime()} ${data.channel ? `[${data.channel}]` : ""} ${data.username}#${data.tag} > ${message}`, prefix, suffix)
+			messages.log(`${this._getTime()} ${data.channel ? `[${data.channel}]` : ""} ${data.bot ? "[BOT] " : ""}${data.username}#${data.tag} > ${message}`, prefix, suffix)
 		})
 
 		socket.on("ratelimited", (data) => {
