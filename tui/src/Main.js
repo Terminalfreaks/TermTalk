@@ -26,7 +26,8 @@ const ServerList = require("./ServerList")
 const Utils = require("../../src/Utils")
 
 class Main {
-  static namedIPs = []
+	static namedIPs = []
+	static realIPs = []
 	static run() {
 		const screen = blessed.screen({
 			smartCSR: true,
@@ -172,7 +173,7 @@ class Main {
 		}, 6000)
 
 		savedIPs.on("select", (data, index) => {
-			form.emit("submit", { ip: Utils.config.ips[index], name: this.namedIPs[index] })
+			form.emit("submit", { ip: Main.realIPs[index], name: Main.namedIPs[index] })
 		})
 
 		serverList.on("press", () => {
@@ -234,24 +235,51 @@ class Main {
     screen.render()
     
      async function _pingSavedIPs() {
-      let names = []
       for (let i = 0; i < Utils.config.ips.length; i++) {
-        let data
-        try {
-          data = await _pingIP(...Utils.config.ips[i].split(":"))
-        } catch (e) {
-          data = {
-            name: `${ip}:${port}`,
-            ip: ip,
-            port: port,
-            members: "unk",
-            maxMembers: "unk"
-          }
-        }
-        names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
+				addOrUpdateServer(_pingIP(...Utils.config.ips[i].split(":")))
+        // let data
+        // try {
+        //   data = await _pingIP(...Utils.config.ips[i].split(":"))
+        // } catch (e) {
+        //   data = {
+        //     name: `${ip}:${port}`,
+        //     ip: ip,
+        //     port: port,
+        //     members: "unk",
+        //     maxMembers: "unk"
+        //   }
+        // }
+        // names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
       }
-      savedIPs.setItems(names)
-      Main.namedIPs = names
+      // savedIPs.setItems(names)
+      // Main.namedIPs = names
+		}
+		
+		function addOrUpdateServer(serverPromise) {
+      serverPromise.then(server => {
+        if (!server) return
+        let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
+        if (index != -1) {
+					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
+					Main.realIPs[index] = `${server.ip}:${server.port}`
+        } else {
+					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
+					Main.realIPs.push(`${server.ip}:${server.port}`)
+        }
+				savedIPs.setItems(Main.namedIPs)
+				screen.render()
+      }).catch(server => {
+        let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
+        if (index != -1) {
+					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
+					Main.realIPs[index] = `${server.ip}:${server.port}`
+        } else {
+					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
+					Main.realIPs.push(`${server.ip}:${server.port}`)
+        }
+				savedIPs.setItems(Main.namedIPs)
+				screen.render()
+      })
     }
     
     function _pingIP(ip, port) {

@@ -213,7 +213,7 @@ If this is successful, the server will emit a `methodResult` event with the data
   memberList: []
 }
 ```
-The `memeberList` will contain all connected members (in the user's connected channel). However, if this fails, usually due to a server error, you will get this data instead:
+The `memberList` will contain all connected members (in the user's connected channel) as an object with `username`, `tag`, `id`, `uid`, `admin`, `bot` properties **lurkers are not shown, instead if there are any lurkers ([lurking](#lurking)), the key will be `lurkers` and the value will be lurkers message. However, if this fails, usually due to a server error, you will get this data instead:
 ```js
 {
   success: false,
@@ -277,7 +277,11 @@ On connect, if history saving is enabled, the server will emit a `method` with `
   username: "SlickSauce",
   channel: "General",
   tag: "4560",
-  msg: "TACOS!"
+  msg: "TACOS!",
+  bot: false,
+  userID: 10704219761807360,
+  id: 108056472374664,
+  uid: "AwesomeSauce"
 }
 ```
 
@@ -299,14 +303,14 @@ As of version 0.3.0, there is now a public server list accessible to all. To kno
 
 ### Note: Pinging servers
 
-Along with the server list, version 0.3.0 also includes a new way to `ping` servers that haven't manually disabled it. This returns data of the server such as their name, max slots, currently connected number of users, port, and their ip to connect to the server (which if you pinged it, you already had). To ping a server make a `GET` request to the server but with the path `/ping`. In this example, this URL would ping the Hub server: `http://chat.is-just-a.dev:3000/ping` it'd return data like this:
+Along with the server list, version 0.3.0 also includes a new way to `ping` servers that haven't manually disabled it. This returns data of the server such as their name, max slots, currently connected number of users, port, and their ip to connect to the server (which if you pinged it, you already had). To ping a server make a `GET` request to the server but with the path `/ping`. In this example, this URL would ping the Hub server: `http://hub.termtalk.app:3000/ping` it'd return data like this:
 ```js
 {
 	members: 0,
   maxMembers: 20,
   name: "TermTalk Hub Server",
   port: 3000,
-  ip: "chat.is-just-a.dev"
+  ip: "hub.termtalk.app"
 }
 ```
 

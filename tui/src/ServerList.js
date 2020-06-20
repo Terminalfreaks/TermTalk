@@ -99,33 +99,14 @@ class ServerList {
 
 		this._getList().then(async list => {
 			for (let i = 0; i < list.length; i++) {
-				let data = await this._pingIP(list[i])
-				if(data.members == "unk"){
-					list.splice(i, 1)
-					i--
-					continue
-				}
-				this.names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
+				this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
 			}
-			servers.setItems(this.names)
-			this.publicServers = list
-			screen.render()
 		})
 		let interval = setInterval(() => {
-			this.names = []
 			this._getList().then(async list => {
 				for (let i = 0; i < list.length; i++) {
-					let data = await this._pingIP(list[i])
-					if(data.members == "unk"){
-						list.splice(i, 1)
-						i--
-						continue
-					}
-					this.names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
+					this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
 				}
-				servers.setItems(this.names)
-				this.publicServers = list
-				screen.render()
 			})
 		}, 5000)
 
@@ -144,7 +125,7 @@ class ServerList {
 		screen.render()
 
 		servers.on("select", (data, index) => {
-			if(index == -1) index = 0
+			if (index == -1) index = 0
 			let ip = this.publicServers[index]
 			let secure = this.names[index].endsWith("Secure")
 			const reconnectionAttempts = 5
@@ -264,6 +245,40 @@ class ServerList {
 					})
 				})
 			})
+		})
+	}
+
+	static addOrUpdateServer(serverPromise, screen, servers) {
+		serverPromise.then(server => {
+			if (!server) return
+			if (server.members == "unk") {
+				let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
+				if (index != -1) {
+					this.publicServers.splice(index, 1)
+					this.names.splice(index, 1)
+				}
+				servers.setItems(this.names)
+				screen.render()
+				return
+			}
+			let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
+			if (index != -1) {
+				this.names[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
+				this.publicServers[index] = `${server.ip}:${server.port}`
+			} else {
+				this.names.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
+				this.publicServers.push(`${server.ip}:${server.port}`)
+			}
+			servers.setItems(this.names)
+			screen.render()
+		}).catch(server => {
+			let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
+			if (index != -1) {
+				this.publicServers.splice(index, 1)
+				this.names.splice(index, 1)
+			}
+			servers.setItems(this.names)
+			screen.render()
 		})
 	}
 }
