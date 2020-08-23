@@ -1,19 +1,13 @@
 <strong><p align="center">TermTalk is a simple and straightforward way of talking to your peers in the terminal.</p></strong>
+Also note: **THIS PROJECT IS DISCONTINUED. I (TorchedSammy) will not be maintaining this anymore.**  
+I kinda got unmotivated and decided to drop the project. Feel free to fork if you want. There is a maintained WebSocket derivative here: https://github.com/Luvella/Voyawa  
+
 An easy CLI interface to just send and receive messages.  
-To use TermTalk you need to host a server of your own. The server can be located at [Terminalfreaks/TermTalk-Server](https://github.com/Terminalfreaks/TermTalk-Server) and is regularly updated with the client here.  
-
-It is still being developed but is currently very usable, and even has password hashing!
-
-## Server
-Our Discord server can be located here: https://discord.gg/GBzFGPe  
-I can't actually host a TermTalk server but you can find others there.
-
-# Screenshot
-soontm
+To use TermTalk you can host a server of your own. The server can be located at [this repo](https://github.com/Torchedgarbage/TermTalk-Server) 
 
 # Installation
 ```
-git clone https://github.com/Terminalfreaks/TermTalk
+git clone https://github.com/Torchedgarbage/TermTalk
 cd TermTalk
 npm install
 npm link
