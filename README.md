@@ -1,6 +1,7 @@
 <strong><p align="center">TermTalk is a simple and straightforward way of talking to your peers in the terminal.</p></strong>
 Also note: **THIS PROJECT IS DISCONTINUED. I (TorchedSammy) will not be maintaining this anymore.**  
-I kinda got unmotivated and decided to drop the project. Feel free to fork if you want. There is a maintained WebSocket derivative here: https://github.com/Luvella/Voyawa  
+I kinda got unmotivated and decided to drop the project. Feel free to fork if you want.
+Once I get started on this again, there will be a Go written derivative at https://github.com/Cloverchat/Cloverchat  
 
 An easy CLI interface to just send and receive messages.  
 To use TermTalk you can host a server of your own. The server can be located at [this repo](https://github.com/Torchedgarbage/TermTalk-Server) 
