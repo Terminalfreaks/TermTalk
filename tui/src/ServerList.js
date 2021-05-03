@@ -174,7 +174,7 @@ class ServerList {
 		// fetch public server list
 		// returns list of public servers in JSON format
 		return new Promise((resolve, reject) => {
-			https.get("https://list.linkedweb.org/", res => {
+			https.get("https://list.linkedweb.org/list", res => {
 				const status = res.statusCode
 				if (status === 200) {
 					res.setEncoding("utf8")
