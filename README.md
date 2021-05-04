@@ -5,7 +5,7 @@ To use TermTalk you can host a server of your own. The server can be located at 
 
 # Installation
 ```
-git clone -b master https://github.com/LinkedDev/TermTalk
+git clone -b alpha https://github.com/LinkedDev/TermTalk
 cd TermTalk
 npm install
 npm link
@@ -16,3 +16,7 @@ If you don't want to link, you can download a packaged version on the releases p
 # Documentation
 
 Please check the Wiki.
+
+# Alpha
+
+This is UNTESTED and should not be used for any secure communication.
