@@ -16,3 +16,7 @@ If you don't want to link, you can download a packaged version on the releases p
 # Documentation
 
 Please check the Wiki.
+
+# Beta
+
+This is code from alpha that HAS been tested to work successfully. There may still be some issues, hence it being moved here first.
