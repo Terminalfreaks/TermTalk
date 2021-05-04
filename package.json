@@ -27,6 +27,7 @@
     "blessed": "^0.1.81",
     "blessed-contrib": "git+https://github.com/Terminalfreaks/blessed-contrib.git",
     "enquirer": "^2.3.5",
+    "marked": "^2.0.0",
     "socket.io-client": "^2.3.0"
   },
   "bin": {
