@@ -208,10 +208,8 @@ class ServerList {
 
 					res.on("end", () => {
 						try {
-							console.log(JSON.parse(raw))
 							return resolve(JSON.parse(raw))
 						} catch (e) {
-							console.log(e)
 							return resolve({
 								name: ip,
 								ip: ip.split(":")[0],
