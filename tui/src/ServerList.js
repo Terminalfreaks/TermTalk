@@ -100,14 +100,14 @@ class ServerList {
 		// fetches the public list
 		this._getList().then(async list => {
 			for (let i = 0; i < list.length; i++) {
-				this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
+				this.addOrUpdateServer(this._pingIP(list[i].ip), screen, servers)
 			}
 		})
 		// every 5sec check for server status- remove from list if offline/errored
 		let interval = setInterval(() => {
 			this._getList().then(async list => {
 				for (let i = 0; i < list.length; i++) {
-					this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
+					this.addOrUpdateServer(this._pingIP(list[i].ip), screen, servers)
 				}
 			})
 		}, 5000)
@@ -174,7 +174,7 @@ class ServerList {
 		// fetch public server list
 		// returns list of public servers in JSON format
 		return new Promise((resolve, reject) => {
-			https.get("https://linkedweb.org/termtalk/list", res => {
+			https.get("https://www.linkedweb.org/termtalk/list", res => {
 				const status = res.statusCode
 				if (status === 200) {
 					res.setEncoding("utf8")
@@ -208,8 +208,10 @@ class ServerList {
 
 					res.on("end", () => {
 						try {
+							console.log(JSON.parse(raw))
 							return resolve(JSON.parse(raw))
 						} catch (e) {
+							console.log(e)
 							return resolve({
 								name: ip,
 								ip: ip.split(":")[0],
@@ -262,7 +264,7 @@ class ServerList {
 	static addOrUpdateServer(serverPromise, screen, servers) {
 		// uses fetched public server list and adds/removes them
 		serverPromise.then(server => {
-			if (!server) return
+			if (!server) return console.log("oops")
 			// Removes "dead" servers
 			// Dead servers are identified by the non-broadcast of member count
 			if (server.members == "unk") {
