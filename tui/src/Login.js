@@ -181,7 +181,7 @@ class LoginTUI {
 					error.toggle()
 					screen.render()
 				}
-				socket.emit("login", data)
+				socket.emit("login", data) // actually login
 			}
 		})
 

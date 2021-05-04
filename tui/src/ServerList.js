@@ -29,6 +29,7 @@ class ServerList {
 	static names = []
 
 	static run() {
+		// launches initial screen
 		const screen = blessed.screen({
 			smartCSR: true,
 			title: "TermTalk Servers"
@@ -96,16 +97,17 @@ class ServerList {
 				}
 			}
 		})
-
+		// fetches the public list
 		this._getList().then(async list => {
 			for (let i = 0; i < list.length; i++) {
-				this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
+				this.addOrUpdateServer(this._pingIP(list[i].ip), screen, servers)
 			}
 		})
+		// every 5sec check for server status- remove from list if offline/errored
 		let interval = setInterval(() => {
 			this._getList().then(async list => {
 				for (let i = 0; i < list.length; i++) {
-					this.addOrUpdateServer(this._pingIP(list[i]), screen, servers)
+					this.addOrUpdateServer(this._pingIP(list[i].ip), screen, servers)
 				}
 			})
 		}, 5000)
@@ -145,7 +147,9 @@ class ServerList {
 			})
 
 			socket.on('connect', () => {
+				// check if the connection was a success
 				socket.on("methodResult", (d) => {
+					// if not a success, display error
 					if (!d.success) {
 						error.content = `{center}${d.message}{/center}`
 						if (error.hidden) {
@@ -153,13 +157,13 @@ class ServerList {
 						}
 						screen.render()
 					} else {
-						clearInterval(interval)
-						Utils.addToIps(ip)
+						clearInterval(interval) // stop pinging servers in the list
+						Utils.addToIps(ip) // add current server ip to saved list on successful connect
 						socket.removeAllListeners()
-						this.names = []
+						this.names = [] // clear (displayed) server list
 						servers.setItems([])
-						Login.run(socket, ip)
-						screen.destroy()
+						Login.run(socket, ip) // login
+						screen.destroy() // switch to login screen
 					}
 				})
 			})
@@ -167,8 +171,10 @@ class ServerList {
 	}
 
 	static _getList() {
+		// fetch public server list
+		// returns list of public servers in JSON format
 		return new Promise((resolve, reject) => {
-			https.get("https://servers.termtalk.app/list", res => {
+			https.get("https://www.linkedweb.org/termtalk/list", res => {
 				const status = res.statusCode
 				if (status === 200) {
 					res.setEncoding("utf8")
@@ -189,6 +195,8 @@ class ServerList {
 	}
 
 	static _pingIP(ip) {
+		// pings a server IP to get the returned server status data
+		// data returned is correctly assumed by name
 		return new Promise((resolve) => {
 			https.get(`https://${ip}/ping`, res => {
 				const status = res.statusCode
@@ -213,6 +221,7 @@ class ServerList {
 					})
 				}
 			}).on("error", () => {
+				// if https fails, attempt http
 				http.get(`http://${ip}/ping`, res => {
 					const status = res.statusCode
 					if (status === 200) {
@@ -236,6 +245,8 @@ class ServerList {
 						})
 					}
 				}).on("error", () => {
+					// if everything fails, don't act like nothing happened,
+					// show the default.
 					return resolve({
 						name: ip,
 						ip: ip.split(":")[0],
@@ -249,8 +260,11 @@ class ServerList {
 	}
 
 	static addOrUpdateServer(serverPromise, screen, servers) {
+		// uses fetched public server list and adds/removes them
 		serverPromise.then(server => {
-			if (!server) return
+			if (!server) return console.log("oops")
+			// Removes "dead" servers
+			// Dead servers are identified by the non-broadcast of member count
 			if (server.members == "unk") {
 				let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
 				if (index != -1) {
@@ -261,17 +275,23 @@ class ServerList {
 				screen.render()
 				return
 			}
+			// If the public server isn't dead, add it to the public server list
 			let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
 			if (index != -1) {
+				// if it exists, update it
 				this.names[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
 				this.publicServers[index] = `${server.ip}:${server.port}`
 			} else {
+				// if it doesn't exist, add it
 				this.names.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
 				this.publicServers.push(`${server.ip}:${server.port}`)
 			}
+			// display servers in blessed
 			servers.setItems(this.names)
+			// render screen
 			screen.render()
 		}).catch(server => {
+			// if for some reason the server data is incorrect, remove it from the list
 			let index = this.publicServers.findIndex(t => t == `${server.ip}:${server.port}`)
 			if (index != -1) {
 				this.publicServers.splice(index, 1)

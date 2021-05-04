@@ -21,6 +21,7 @@ const http = require("http")
 const https = require("https")
 
 class RegisterTUI {
+	// the register page/screen
 	static run(socket, connectedIP) {
 		const screen = blessed.screen({
 			smartCSR: true,
@@ -181,23 +182,25 @@ class RegisterTUI {
 
 		form.on("submit", (data) => {
 			if (!data.uid || !data.password || !data.tag || !data.username) {
+				// if some data is missing, don't submit
 				error.content = "{center}Please enter all the information.{/center}"
 				error.height = 4
 				if (error.hidden) {
 					error.toggle()
 				}
-				form.reset()
+				form.reset() // clear form input and re-render
 				screen.render()
 			} else {
 				if (!error.hidden) {
 					error.toggle()
 					screen.render()
 				}
-				socket.emit("register", data)
+				socket.emit("register", data) // go ahead and register with the connected server
 			}
 		})
 
 		socket.on("authResult", (data) => {
+			// result from the server after login/registration 
 			if (!data.success) {
 				error.content = "{center}" + data.message + "{/center}"
 				error.height = 5

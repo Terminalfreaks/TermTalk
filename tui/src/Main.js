@@ -135,8 +135,8 @@ class Main {
 			height: "58%",
 			items: Utils.config.ips,
 			tags: true,
-      keys: true,
-      scrollable: true,
+			keys: true,
+			scrollable: true,
 			border: {
 				type: "line"
 			},
@@ -191,7 +191,7 @@ class Main {
 				}
 				screen.render()
 			} else {
-        const reconnectionAttempts = 5
+				const reconnectionAttempts = 5
 				const secure = secureBox.checked || (data.name && data.name.endsWith("Secure"))
 				let socket = secure ? io(data.ip.startsWith("https") ? data.ip : `https://${data.ip}`, { timeout: 5000, reconnectionAttempts, secure }) : io(data.ip.startsWith("http") ? data.ip : `http://${data.ip}`, { timeout: 5000, reconnectionAttempts })
 
@@ -217,7 +217,7 @@ class Main {
 							}
 							screen.render()
 						} else {
-              clearInterval(interval)
+							clearInterval(interval)
 							Utils.addToIps(data.ip)
 							socket.removeAllListeners()
 							Login.run(socket, data.ip)
@@ -232,117 +232,118 @@ class Main {
 			process.exit();
 		})
 
-    screen.render()
-    
-     async function _pingSavedIPs() {
-      for (let i = 0; i < Utils.config.ips.length; i++) {
-				addOrUpdateServer(_pingIP(...Utils.config.ips[i].split(":")))
-        // let data
-        // try {
-        //   data = await _pingIP(...Utils.config.ips[i].split(":"))
-        // } catch (e) {
-        //   data = {
-        //     name: `${ip}:${port}`,
-        //     ip: ip,
-        //     port: port,
-        //     members: "unk",
-        //     maxMembers: "unk"
-        //   }
-        // }
-        // names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
-      }
-      // savedIPs.setItems(names)
-      // Main.namedIPs = names
-		}
-		
-		function addOrUpdateServer(serverPromise) {
-      serverPromise.then(server => {
-        if (!server) return
-        let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
-        if (index != -1) {
-					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
-					Main.realIPs[index] = `${server.ip}:${server.port}`
-        } else {
-					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
-					Main.realIPs.push(`${server.ip}:${server.port}`)
-        }
-				savedIPs.setItems(Main.namedIPs)
-				screen.render()
-      }).catch(server => {
-        let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
-        if (index != -1) {
-					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
-					Main.realIPs[index] = `${server.ip}:${server.port}`
-        } else {
-					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
-					Main.realIPs.push(`${server.ip}:${server.port}`)
-        }
-				savedIPs.setItems(Main.namedIPs)
-				screen.render()
-      })
-    }
-    
-    function _pingIP(ip, port) {
-      return new Promise((resolve) => {
-        https.get(`https://${ip}:${port}/ping`, res => {
-          const status = res.statusCode
-          if (status === 200) {
-            res.setEncoding("utf8")
-            let raw = ""
-    
-            res.on("data", (d) => raw += d)
-    
-            res.on("end", () => {
-              try {
-                return resolve(JSON.parse(raw))
-              } catch (e) {
-                return resolve({
-                  name: `${ip}:${port}`,
-                  ip: ip,
-                  port: port,
-                  members: "unk",
-                  maxMembers: "unk"
-                })
-              }
-            })
-          }
-        }).on("error", () => {
-          http.get(`http://${ip}:${port}/ping`, res => {
-            const status = res.statusCode
-            if (status === 200) {
-              res.setEncoding("utf8")
-              let raw = ""
-    
-              res.on("data", (d) => raw += d)
-    
-              res.on("end", () => {
-                try {
-                  return resolve(JSON.parse(raw))
-                } catch (e) {
-                  return resolve({
-                    name: `${ip}:${port}`,
-                    ip: ip,
-                    port: port,
-                    members: "unk",
-                    maxMembers: "unk"
-                  })
-                }
-              })
-            }
-          }).on("error", () => {
-            return resolve({
-              name: `${ip}:${port}`,
-              ip: ip,
-              port: port,
-              members: "unk",
-              maxMembers: "unk"
-            })
-          })
-        })
-      })
-    }
+		screen.render()
 
-  }
+		async function _pingSavedIPs() {
+			// unlike in ServerList.js- we are pinging the SAVED list of servers. Not the public ones.
+			for (let i = 0; i < Utils.config.ips.length; i++) {
+				addOrUpdateServer(_pingIP(...Utils.config.ips[i].split(":")))
+				// let data
+				// try {
+				//   data = await _pingIP(...Utils.config.ips[i].split(":"))
+				// } catch (e) {
+				//   data = {
+				//     name: `${ip}:${port}`,
+				//     ip: ip,
+				//     port: port,
+				//     members: "unk",
+				//     maxMembers: "unk"
+				//   }
+				// }
+				// names.push(`${data.name} : ${data.members}/${data.maxMembers} ${data.secure ? "Secure" : ""}`)
+			}
+			// savedIPs.setItems(names)
+			// Main.namedIPs = names
+		}
+
+		function addOrUpdateServer(serverPromise) {
+			serverPromise.then(server => {
+				if (!server) return
+				let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
+				if (index != -1) {
+					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
+					Main.realIPs[index] = `${server.ip}:${server.port}`
+				} else {
+					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
+					Main.realIPs.push(`${server.ip}:${server.port}`)
+				}
+				savedIPs.setItems(Main.namedIPs)
+				screen.render()
+			}).catch(server => {
+				let index = Main.realIPs.findIndex(t => t == `${server.ip}:${server.port}`)
+				if (index != -1) {
+					Main.namedIPs[index] = `${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`
+					Main.realIPs[index] = `${server.ip}:${server.port}`
+				} else {
+					Main.namedIPs.push(`${server.name} : ${server.members}/${server.maxMembers} ${server.secure ? "Secure" : ""}`)
+					Main.realIPs.push(`${server.ip}:${server.port}`)
+				}
+				savedIPs.setItems(Main.namedIPs)
+				screen.render()
+			})
+		}
+
+		function _pingIP(ip, port) {
+			return new Promise((resolve) => {
+				https.get(`https://${ip}:${port}/ping`, res => {
+					const status = res.statusCode
+					if (status === 200) {
+						res.setEncoding("utf8")
+						let raw = ""
+
+						res.on("data", (d) => raw += d)
+
+						res.on("end", () => {
+							try {
+								return resolve(JSON.parse(raw))
+							} catch (e) {
+								return resolve({
+									name: `${ip}:${port}`,
+									ip: ip,
+									port: port,
+									members: "unk",
+									maxMembers: "unk"
+								})
+							}
+						})
+					}
+				}).on("error", () => {
+					http.get(`http://${ip}:${port}/ping`, res => {
+						const status = res.statusCode
+						if (status === 200) {
+							res.setEncoding("utf8")
+							let raw = ""
+
+							res.on("data", (d) => raw += d)
+
+							res.on("end", () => {
+								try {
+									return resolve(JSON.parse(raw))
+								} catch (e) {
+									return resolve({
+										name: `${ip}:${port}`,
+										ip: ip,
+										port: port,
+										members: "unk",
+										maxMembers: "unk"
+									})
+								}
+							})
+						}
+					}).on("error", () => {
+						return resolve({
+							name: `${ip}:${port}`,
+							ip: ip,
+							port: port,
+							members: "unk",
+							maxMembers: "unk"
+						})
+					})
+				})
+			})
+		}
+
+	}
 }
 
 module.exports = Main
